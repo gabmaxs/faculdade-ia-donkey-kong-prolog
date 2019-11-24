@@ -7,33 +7,27 @@ concatena([],L,L).
 concatena([Cb|Cd],L,[Cb|Cd2]) :- concatena(Cd,L,Cd2).
 
 % MOVIMENTACAO
-anda([X,Y],[Xnovo,Y]) :- X < 7, Xnovo is X + 1. % DIREITA
-anda([X,Y],[Xnovo,Y]) :- X > 0, Xnovo is X - 1. % ESQUERDA
-anda([X,Y],[X,Ynovo]) :- Y < 4, Ynovo is Y + 1. % CIMA 
-anda([X,Y],[X,Ynovo]) :- Y > 0, Ynovo is Y - 1. % BAIXO
+sobe([X,Y],[Xnovo,Y]) :- X < 4, Xnovo is X + 1. % SOBE
+desce([X,Y],[Xnovo,Y]) :- X > 0, Xnovo is X - 1. % BAIXO
+anda([X,Y],[X,Ynovo]) :- Y > 0, Ynovo is Y - 1. % ESQUERDA
+anda([X,Y],[X,Ynovo]) :- Y < 9, Ynovo is Y + 1. % DIREITA 
 
 % CONDICOES DE MOVIMENTACAO
-% pode_andar(Estado, Proximo, ListaEscadas, ListaParedes, ListaBarril, Caminho) :- % DIREITA/ESQUERDA
-%     anda(Estado,Proximo),
-%     not(pertence(Proximo, [Estado|Caminho])),
-%     not(pertence(Estado, ListaEscadas, ListaParedes, ListaBarril)).
-% pode_andar(Estado, Proximo, ListaEscadas, ListaParedes, ListaBarril, Caminho) :- % CIMA
-%     anda(Estado,Proximo),
-%     not(pertence(Proximo, [Estado|Caminho])),
-%     pertence(Estado, ListaEscadas, ListaParedes, ListaBarril).
-% pode_andar(Estado, Proximo, ListaEscadas, ListaParedes, ListaBarril, Caminho) :- % Baixo
-%     anda(Estado,Proximo),
-%     not(pertence(Proximo, [Estado|Caminho])),
-%     pertence(Proximo, ListaEscadas, ListaParedes, ListaBarril).
-pode_andar(Estado, Proximo, _, ListaParedes, _, Caminho) :-
+pode_andar(Estado, Proximo, _, ListaParedes, _, Caminho) :- % ANDAR PARA O LADO / PAREDES
     anda(Estado,Proximo),
     not(pertence(Proximo, ListaParedes)),
     not(pertence(Proximo, [Estado|Caminho])).
 
-% pode_andar(Estado, Proximo, ListaEscadas, _, _, Caminho) :-
-%     anda(Estado,Proximo),
-%     pertence(Estado,ListaEscadas),
-%     not(pertence(Proximo, [Estado|Caminho])).
+
+pode_andar(Estado, Proximo, ListaEscadas, _, _, Caminho) :- % SUBIR / ESCADA
+    sobe(Estado,Proximo),
+    pertence(Estado, ListaEscadas),
+    not(pertence(Proximo, [Estado|Caminho])).
+
+pode_andar(Estado, Proximo, ListaEscadas, _, _, Caminho) :- % DESCER / ESCADA
+    desce(Estado,Proximo),
+    pertence(Proximo, ListaEscadas),
+    not(pertence(Proximo, [Estado|Caminho])).
 
 % pode_andar(Estado, Proximo, _, _, ListaBarril, Caminho) :-
 %     anda(Estado,Proximo),
@@ -46,7 +40,7 @@ estende([Estado|Caminho], ListaCaminhos, ListaEscadas, ListaParedes, ListaBarril
 estende(_,[],_, _, _).
 
 
-meta(X) :- X = [7,4].
+meta(X) :- X = [4,9].
     
 
 solucao(Inicial, ListaEscadas, ListaParedes, ListaBarril, S) :- busca_largura([[Inicial]], ListaEscadas, ListaParedes, ListaBarril, S).
